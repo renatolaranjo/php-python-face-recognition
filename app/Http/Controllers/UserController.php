@@ -31,9 +31,16 @@ class UserController extends Controller
             $filename = $user->id . '.png';
             $content = base64_decode(explode(',', $request->encode_img)[1]);
             Storage::put('faces/' . $filename, $content);
-            $pathScript = '..' . self::DS . 'app' . self::DS . 'Console' . self::DS . 'Scripts' .
+            $storagePath = storage_path('app' . self::DS . 'faces');
+            $scriptPath = app_path('Console' . self::DS . 'Scripts');
+            $pathScript = 'Console' . self::DS . 'Scripts' .
                 self::DS . 'face_train.py';
-            $process = new Process([env('PYTHON_PATH'), $pathScript]);
+            $process = new Process([
+                env('PYTHON_PATH'),
+                app_path($pathScript),
+                $storagePath,
+                $scriptPath
+            ]);
             $process->run();
             if (!$process->isSuccessful()) {
                 throw new ProcessFailedException($process);
