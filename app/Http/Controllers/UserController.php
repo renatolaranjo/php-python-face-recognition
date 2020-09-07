@@ -31,13 +31,15 @@ class UserController extends Controller
             $filename = $user->id . '.png';
             $content = base64_decode(explode(',', $request->encode_img)[1]);
             Storage::put('faces/' . $filename, $content);
+
             $storagePath = storage_path('app' . self::DS . 'faces');
             $scriptPath = app_path('Console' . self::DS . 'Scripts');
             $pathScript = 'Console' . self::DS . 'Scripts' .
                 self::DS . 'face_train.py';
+            $scriptAppPath = app_path($pathScript);
             $process = new Process([
                 env('PYTHON_PATH'),
-                app_path($pathScript),
+                $scriptAppPath,
                 $storagePath,
                 $scriptPath
             ]);
@@ -62,7 +64,17 @@ class UserController extends Controller
         Storage::put('recon/' . $filename, $content);
         $pathScript = '..' . self::DS . 'app' . self::DS . 'Console' . self::DS . 'Scripts' .
             self::DS . 'face_recog.py';
-        $process = new Process([env('PYTHON_PATH'), $pathScript, $filename]);
+        $filenamePath = storage_path('app' . self::DS . 'recon' . self::DS . $filename);
+        $scriptPath = app_path('Console' . self::DS . 'Scripts');
+        $pathScript = 'Console' . self::DS . 'Scripts' .
+            self::DS . 'face_recog.py';
+        $scriptAppPath = app_path($pathScript);
+        $process = new Process([
+            env('PYTHON_PATH'),
+            $scriptAppPath,
+            $filenamePath,
+            $scriptPath
+        ]);
         $process->run();
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
@@ -71,9 +83,11 @@ class UserController extends Controller
         Storage::delete('recon/' . $filename);
         if ($outputJson->confidence < 100 && $outputJson->id) {
             $user = User::find($outputJson->id);
+            $confidenceResult = 100 - $outputJson->confidence;
+            $status = ($confidenceResult) < 30 ? 'unknown' : 'success';
             return [
-                'status' => 'success',
-                'confidence' => $outputJson->confidence,
+                'status' => $status,
+                'confidence' => $confidenceResult,
                 'user' => $user
             ];
         } elseif ($outputJson->confidence > 100 && $outputJson->id != 'no_face') {

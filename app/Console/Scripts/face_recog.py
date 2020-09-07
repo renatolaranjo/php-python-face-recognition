@@ -5,16 +5,16 @@ import sys
 import base64
 import json
 
+scriptPath = sys.argv[2]
 recognizer = cv2.face.LBPHFaceRecognizer_create()
-recognizer.read('../app/Console/Scripts/trainer.yml')
-cascadePath = "../app/Console/Scripts/haarcascade_frontalface_default.xml"
+recognizer.read(scriptPath + '/trainer.yml')
+cascadePath = scriptPath + '/haarcascade_frontalface_default.xml'
 faceCascade = cv2.CascadeClassifier(cascadePath)
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
-img = sys.argv[1]
-path = '../storage/app/recon/' + img
-image = cv2.imread(path)
+imgPath = sys.argv[1]
+image = cv2.imread(imgPath)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 faces = faceCascade.detectMultiScale(
@@ -30,7 +30,7 @@ for (x, y, w, h) in faces:
     id, confidence = recognizer.predict(gray[y:y+h, x:x+w])
 
 if (confidence):
-    response={'confidence':100 - confidence,'id':id}
+    response={'confidence': confidence,'id':id}
     print(json.JSONEncoder().encode(response))
 else:
     response={'confidence':101,'id':'no_face'}
