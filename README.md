@@ -19,7 +19,7 @@ DB_USERNAME=
 DB_PASSWORD=
 ```
 
-Set a new variable for Python executable. In my case is /anaconda3/bin/python. The purpose of this variable it`s about shell permissions. Reference (https://stackoverflow.com/questions/58627223/python-no-module-named-when-script-is-executed-by-php-with-shell-exec).
+Set a new variable for Python executable. In my case is */anaconda3/bin/python*. The purpose of this variable it`s about shell permissions. Reference (https://stackoverflow.com/questions/58627223/python-no-module-named-when-script-is-executed-by-php-with-shell-exec).
 
 ```
 PYTHON_PATH=

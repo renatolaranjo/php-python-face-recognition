@@ -1,23 +1,80 @@
 <?php
-
+/**
+ * Recognize file
+ *
+ * PHP Version 7.4
+ *
+ * @category Controller
+ * @package  Controller
+ * @author   Renato Laranjo <renatolaranjo@gmail.com>
+ * @license  http://www.php.net/license/3_01.txt  PHP License 3.01
+ * @link     https://github.com/renatolaranjo/php-python-face-recognition/app/Services
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
+use App\Services\Recognize\Recognize;
+use App\Services\Train\Train;
 
+/**
+ * UserController Class
+ *
+ * @category Controller
+ * @package  Controller
+ * @author   Renato Laranjo <renatolaranjo@gmail.com>
+ * @license  http://www.php.net/license/3_01.txt  PHP License 3.01
+ * @link     http://github.com/renatolaranjo/php-python-face-recognition/app/Services
+ */
 class UserController extends Controller
 {
     const DS = DIRECTORY_SEPARATOR;
 
+    /**
+     * Recognize Face
+     *
+     * @var Recgnize
+     */
+    private $recognize;
+
+    /**
+     * Train Dataset
+     *
+     * @var Train
+     */
+    private $train;
+
+    /**
+     * Constructor
+     *
+     * @param Recognize $recognize Recognize Face
+     * @param Train $train Train Dataset
+     * @return void
+     */
+    public function __construct(Recognize $recognize, Train $train)
+    {
+        $this->recognize = $recognize;
+        $this->train = $train;
+    }
+
+    /**
+     * List users
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function list()
     {
         return User::get(['id', 'name', 'email', 'country']);
     }
 
+    /**
+     * Register user and train dataset
+     *
+     * @param Request $request Request with data
+     * @return array
+     */
     public function register(Request $request)
     {
         try {
@@ -26,30 +83,7 @@ class UserController extends Controller
                 'email' => 'email|required|unique:users,email',
                 'country' => 'required'
             ]);
-
-            $user = User::create($request->toArray());
-            $filename = $user->id . '.png';
-            $content = base64_decode(explode(',', $request->encode_img)[1]);
-            Storage::put('faces/' . $filename, $content);
-
-            $storagePath = storage_path('app' . self::DS . 'faces');
-            $scriptPath = app_path('Console' . self::DS . 'Scripts');
-            $pathScript = 'Console' . self::DS . 'Scripts' .
-                self::DS . 'face_train.py';
-            $scriptAppPath = app_path($pathScript);
-            $process = new Process([
-                env('PYTHON_PATH'),
-                $scriptAppPath,
-                $storagePath,
-                $scriptPath
-            ]);
-            $process->run();
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
-            return response()->json([
-                'status' => 'success',
-            ], 201);
+            return $this->train->execute($request);
         } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors(),
@@ -57,50 +91,23 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Recoginze face
+     *
+     * @param Request $request Request form
+     * @return array
+     */
     public function recog(Request $request)
     {
-        $filename = time() . '.png';
-        $content = base64_decode(explode(',', $request->img)[1]);
-        Storage::put('recon/' . $filename, $content);
-        $pathScript = '..' . self::DS . 'app' . self::DS . 'Console' . self::DS . 'Scripts' .
-            self::DS . 'face_recog.py';
-        $filenamePath = storage_path('app' . self::DS . 'recon' . self::DS . $filename);
-        $scriptPath = app_path('Console' . self::DS . 'Scripts');
-        $pathScript = 'Console' . self::DS . 'Scripts' .
-            self::DS . 'face_recog.py';
-        $scriptAppPath = app_path($pathScript);
-        $process = new Process([
-            env('PYTHON_PATH'),
-            $scriptAppPath,
-            $filenamePath,
-            $scriptPath
-        ]);
-        $process->run();
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-        $outputJson =  json_decode($process->getOutput());
-        Storage::delete('recon/' . $filename);
-        if ($outputJson->confidence < 100 && $outputJson->id) {
-            $user = User::find($outputJson->id);
-            $confidenceResult = 100 - $outputJson->confidence;
-            $status = ($confidenceResult) < 30 ? 'unknown' : 'success';
-            return [
-                'status' => $status,
-                'confidence' => $confidenceResult,
-                'user' => $user
-            ];
-        } elseif ($outputJson->confidence > 100 && $outputJson->id != 'no_face') {
-            return [
-                'status' => 'unknown'
-            ];
-        } else {
-            return [
-                'status' => 'no_face'
-            ];
-        }
+        return $this->recognize->execute($request->img);
     }
 
+    /**
+     * Show face in dataset
+     *
+     * @param integer $index User ID
+     * @return array
+     */
     public function face($index)
     {
         $path = 'faces' . self::DS . $index . '.png';

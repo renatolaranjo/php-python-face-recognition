@@ -14,3 +14,4 @@ yarn-error.log
 /app/Console/Scripts/trainer.yml
 /build
 /logs
+.editorconfig
