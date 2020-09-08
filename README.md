@@ -31,3 +31,9 @@ composer install
 npm install && npm run dev
 php artisan migrate
 ```
+
+## Reset and Refresh Database
+```
+php artisan face-recog:reset
+````
+This command remove trainer filed used in Opencv, exclude dataset where contains all images used for training and refresh/migrate database.
