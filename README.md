@@ -2,7 +2,7 @@
 This application is an example how use a face recognition using a python shell scripts integrated with PHP using Laravel as framework. There are three pages: list, register and identify. It was used OpenCV (cv2) as library for training datasets and recognizer.
 
 ## Requirements
-- Python 3.* including libraries cv2, numpy
+- Python 3.* including libraries opencv-contrib-python, numpy
 - PHP 7.*
 - Javascript, NPM
 - OpenCV
