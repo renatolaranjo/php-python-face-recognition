@@ -44,4 +44,4 @@ php artisan face-recog:reset
 ````
 This command remove trainer filed used in Opencv, exclude dataset where contains all images used for training and refresh/migrate database.
 
-   remove this line
+   remove this line why
