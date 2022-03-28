@@ -16,8 +16,12 @@ In your hosts file set:
 ```
 192.168.33.10   php-python-facerecog.local 
 ```
-
-
+### Docker
+#### Requirements
+- docker-compose
+```
+run install.sh
+```
 ## Reset and Refresh Database
 ```
 php artisan face-recog:reset
