@@ -7,38 +7,21 @@ This application is an example how use a face recognition using a python shell s
 - Javascript, NPM
 - OpenCV
 
-## Configuration
-Create a file .env in root application and set a database configuration. Documentation (https://laravel.com/docs/7.x/configuration).
-
-```
-DB_CONNECTION=
-DB_HOST=
-DB_PORT=
-DB_DATABASE=
-DB_USERNAME=
-DB_PASSWORD=
-```
-
-Set a new variable for Python executable. In my case is */anaconda3/bin/python*. The purpose of this variable it`s related to shell permissions. Reference (https://stackoverflow.com/questions/58627223/python-no-module-named-when-script-is-executed-by-php-with-shell-exec).
-
-```
-PYTHON_PATH=
-```
-
-Base URL for javascript.
-
-```
-MIX_APP_URL="${APP_URL}"
-```
-
 ## Instalation
+### Vagrant
+```
+vagrant up
+```
+In your hosts file set: 
+```
+192.168.33.10   php-python-facerecog.local 
+```
 ### Docker
-#### Pre Requisites
-- docker and docker-compose
+#### Requirements
+- docker-compose
 ```
 run install.sh
 ```
-
 ## Reset and Refresh Database
 ```
 php artisan face-recog:reset
