@@ -32,10 +32,11 @@ MIX_APP_URL="${APP_URL}"
 ```
 
 ## Instalation
+### Docker
+#### Pre Requisites
+- docker and docker-compose
 ```
-composer install
-npm install && npm run dev
-php artisan migrate
+run install.sh
 ```
 
 ## Reset and Refresh Database
