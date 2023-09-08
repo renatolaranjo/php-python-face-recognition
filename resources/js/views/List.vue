@@ -78,7 +78,7 @@ export default {
     list: function () {
       api.get("/list").then((response) => {
         let data = response.data;
-        this.items = response.data;
+        this.items = data;
         this.search = true;
       });
     },

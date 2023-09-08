@@ -16,6 +16,6 @@ use App\Http\Controllers\UserController;
 */
 
 Route::get('list', [UserController::class, 'list']);
-Route::post('register', [UserController::class, 'register']);
-Route::post('recog', [UserController::class, 'recog']);
+Route::post('register', [UserController::class, 'register'])->name('register');
+Route::post('recog', [UserController::class, 'recog'])->name('recog');;
 Route::get('face/{index}', [UserController::class, 'face']);
