@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
     <title>{{ env('APP_NAME') }}</title>
 
@@ -21,7 +22,7 @@
                 <x-tab.link id='recon'>Recognize</x-tab.link>
                 @slot('content')
                 <x-tab.content identifier="train">
-                    Train
+                    <livewire:trainer />
                 </x-tab.content>
                 <x-tab.content identifier="recon">
                     Recognize
