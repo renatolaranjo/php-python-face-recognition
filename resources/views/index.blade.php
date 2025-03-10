@@ -14,6 +14,7 @@
 </head>
 
 <body class="bg-gradient-to-t from-gray-200 to-white  h-screen">
+
     <x-wrapper>
         <x-page>
             <x-tab>
@@ -21,7 +22,7 @@
                 <x-tab.link id='recon'>Recognize</x-tab.link>
                 @slot('content')
                 <x-tab.content identifier="train">
-                    Train
+                    <livewire-trainer />
                 </x-tab.content>
                 <x-tab.content identifier="recon">
                     Recognize
@@ -29,6 +30,7 @@
                 @endslot
             </x-tab>
             <livewire:faces />
+
         </x-page>
     </x-wrapper>
     @livewireScripts
