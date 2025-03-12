@@ -23,7 +23,8 @@
         </div>
         <div class="p-4">
             @if ($file)
-            <img src="{{ $file->temporaryUrl() }}">
+                {{-- <img class="h-72" src="{{ $file->temporaryUrl() }}"> --}}
+                <img class="h-72" src="{{ asset('storage/' . $fileFace . '.jpg') }}">
             @endif
         </div>
     </div>
